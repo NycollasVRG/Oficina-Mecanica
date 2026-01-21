@@ -6,8 +6,6 @@ public class Cliente extends Pessoa{
     private Integer codCliente;
 
     //construtor
-
-
     public Cliente(String cpf, String nome,
                    String telefone, String rua,
                    String bairro, String cidade, String numero,
@@ -15,6 +13,13 @@ public class Cliente extends Pessoa{
         super(cpf, nome, telefone, rua, bairro, cidade, numero);
         this.tipoCliente = tipoCliente;
         this.codCliente = codCliente;
+    }
+
+    //construtor criado para satisfazer a relacao de Cliente e Veiculo, para a classe VeiculoDao
+    public Cliente(String cpf) {
+        super( cpf, "", "", "", "", "", ""); // Chama Pessoa passando CPF e o resto vazio
+        this.tipoCliente = "Indefinido"; // Valor padrão para não ficar null
+        this.codCliente = 0;             // Valor padrão
     }
 
     //getters e setters

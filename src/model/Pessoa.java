@@ -11,7 +11,6 @@ public abstract class Pessoa {
     private String numero;
 
     //construtor
-
     public Pessoa(String cpf, String nome,
                   String telefone, String rua,
                   String bairro, String cidade, String numero) {
