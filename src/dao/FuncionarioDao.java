@@ -5,13 +5,14 @@ import model.Funcionario;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class FuncionarioDao extends DaoGenerico<Funcionario>{
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     //nome do arquivo que será criado na pasta data/
-    public FuncionarioDao(String nomeArquivo) {
+    public FuncionarioDao() {
         super("funcionarios.txt");
     }
 
@@ -53,4 +54,27 @@ public class FuncionarioDao extends DaoGenerico<Funcionario>{
 
         return new Funcionario(cpf, nome, telefone, rua, bairro, cidade, numero, matricula, salario, cargo, dataAdmissao);
     }
+
+    private int buscarProximaMatricula(){
+        List<Funcionario> lista = listar();
+        int maiorMat = 0;
+
+        for (Funcionario f : lista){
+            if(f.getMatricula() > maiorMat){
+                maiorMat = f.getMatricula();
+            }
+        }
+        return maiorMat + 1;
+    }
+
+    @Override
+    public boolean salvar(Funcionario f){
+        //se a matricula for 0, vai gerar uma nova matricula
+        if(f.getMatricula() == 0){
+            int novaMatricula = buscarProximaMatricula();
+            f.setMatricula(novaMatricula);
+        }
+        return super.salvar(f);
+    }
+
 }
