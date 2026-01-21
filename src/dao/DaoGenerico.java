@@ -11,11 +11,19 @@ public abstract class DaoGenerico <T>{
     private String caminhoArquivo;
 
     //construtor
+    public DaoGenerico(String nomeArquivo) {
+        // Define o caminho data
+        this.caminhoArquivo = "data/" + nomeArquivo;
 
-    public DaoGenerico(String caminhoArquivo) {
-        this.caminhoArquivo = "data/" + caminhoArquivo; // o data/ vai garantir que o arquivo fique salvo na pasta correta
+        // Verifica se a pasta existe antes de tentar salvar
+        File arquivo = new File(this.caminhoArquivo);
+        File pasta = arquivo.getParentFile(); // Pega a pasta "data"
+
+        if (!pasta.exists()) {
+            // Se a pasta não existir, ele vai criar de novo só
+            pasta.mkdirs();
+        }
     }
-
     //classe filha deve "ensinar" como transformar objeto em texto
     public abstract  String toCSV(T objeto);
 
