@@ -11,13 +11,14 @@ public class Cliente extends Pessoa{
                    String bairro, String cidade, String numero,
                    String tipoCliente, Integer codCliente) {
         super(cpf, nome, telefone, rua, bairro, cidade, numero);
-        this.tipoCliente = tipoCliente;
-        this.codCliente = codCliente;
+        setTipoCliente(tipoCliente);
+        setCodCliente(codCliente);
     }
 
     //construtor criado para satisfazer a relacao de Cliente e Veiculo, para a classe VeiculoDao
     public Cliente(String cpf) {
-        super( cpf, "", "", "", "", "", ""); // Chama Pessoa passando CPF e o resto vazio
+        //para satisfazer as novas regras vai ser passado um nome desconhecido e um telefone falso
+        super( cpf, "Cliente Temporario", "00000000", "", "", "", ""); // Chama Pessoa passando CPF e o resto vazio
         this.tipoCliente = "Indefinido"; // Valor padrão para não ficar null
         this.codCliente = 0;             // Valor padrão
     }
@@ -29,6 +30,9 @@ public class Cliente extends Pessoa{
     }
 
     public void setTipoCliente(String tipoCliente) {
+        if (tipoCliente == null || tipoCliente.trim().isEmpty()) {
+            throw new IllegalArgumentException("Erro: O tipo de cliente não pode ser vazio.");
+        }
         this.tipoCliente = tipoCliente;
     }
 
@@ -37,6 +41,10 @@ public class Cliente extends Pessoa{
     }
 
     public void setCodCliente(Integer codCliente) {
+        // aceita 0 (novo) ou positivo e não aceita negativo
+        if (codCliente == null || codCliente < 0) {
+            throw new IllegalArgumentException("Erro: Código do cliente inválido.");
+        }
         this.codCliente = codCliente;
     }
 }

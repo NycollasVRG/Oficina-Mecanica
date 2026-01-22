@@ -14,13 +14,13 @@ public abstract class Pessoa {
     public Pessoa(String cpf, String nome,
                   String telefone, String rua,
                   String bairro, String cidade, String numero) {
-        this.cpf = cpf;
-        this.nome = nome;
-        this.telefone = telefone;
-        this.rua = rua;
-        this.bairro = bairro;
-        this.cidade = cidade;
-        this.numero = numero;
+        setCpf(cpf);
+        setNome(nome);
+        setTelefone(telefone);
+        setRua(rua);
+        setBairro(bairro);
+        setCidade(cidade);
+        setNumero(numero);
     }
 
     //getters e setters
@@ -29,6 +29,12 @@ public abstract class Pessoa {
     }
 
     public void setCpf(String cpf) {
+        //Regra do cpf ter 11 numeros ou estar no formato 000.000.000-00
+        String apenasNumeros = cpf != null ? cpf.replaceAll("[^0-9]", "") : "";
+
+        if (apenasNumeros.length() != 11){
+            throw new IllegalArgumentException("Erro: O CPF deve conter 11 dígitos");
+        }
         this.cpf = cpf;
     }
 
@@ -37,6 +43,10 @@ public abstract class Pessoa {
     }
 
     public void setNome(String nome) {
+        //Deve ter um nome
+        if(nome == null || nome.trim().length() < 3){
+            throw new IllegalArgumentException("Erro: O nome dever ter no mínimo 3 letras");
+        }
         this.nome = nome;
     }
 
@@ -45,6 +55,10 @@ public abstract class Pessoa {
     }
 
     public void setTelefone(String telefone) {
+        //no telefone deve ter um tamanho minimo
+        if(telefone == null || telefone.length() < 8){
+            throw new IllegalArgumentException("Erro: Telefone inválido");
+        }
         this.telefone = telefone;
     }
 

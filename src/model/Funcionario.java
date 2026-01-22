@@ -13,10 +13,10 @@ public class Funcionario extends Pessoa{
                        String telefone, String rua, String bairro, String cidade, String numero, Integer matricula, BigDecimal salario,
                        String cargo, LocalDate dataAdmissao) {
         super(cpf, nome, telefone, rua, bairro, cidade, numero);
-        this.matricula = matricula;
-        this.salario = salario;
-        this.cargo = cargo;
-        this.dataAdmissao = dataAdmissao;
+        setMatricula(matricula);
+        setSalario(salario);
+        setCargo(cargo);
+        setDataAdmissao(dataAdmissao);
     }
 
     public Integer getMatricula() {
@@ -24,6 +24,10 @@ public class Funcionario extends Pessoa{
     }
 
     public void setMatricula(Integer matricula) {
+        //não deve ter matricula negativa
+        if(matricula == null || matricula < 0){
+            throw new IllegalArgumentException("Erro: A matricula não pode ser negativa");
+        }
         this.matricula = matricula;
     }
 
@@ -32,6 +36,10 @@ public class Funcionario extends Pessoa{
     }
 
     public void setSalario(BigDecimal salario) {
+        //o salario deve ser maior do que 0
+        if(salario == null || salario.compareTo(BigDecimal.ZERO) < 0){
+            throw new IllegalArgumentException("Erro: O salário não pode ser negativo ou nula");
+        }
         this.salario = salario;
     }
 
