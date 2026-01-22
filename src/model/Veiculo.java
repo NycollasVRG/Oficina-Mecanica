@@ -13,11 +13,11 @@ public class Veiculo {
     //construtor
     public Veiculo(String placaCarro, String cor, String modelo,
                    String marca, Cliente dono) {
-        this.placaCarro = placaCarro;
-        this.cor = cor;
-        this.modelo = modelo;
-        this.marca = marca;
-        this.dono = dono;
+        setPlacaCarro(placaCarro);
+        setCor(cor);
+        setModelo(modelo);
+        setMarca(marca);
+        setDono(dono);
     }
 
     //getter e setters
@@ -26,6 +26,9 @@ public class Veiculo {
     }
 
     public void setPlacaCarro(String placaCarro) {
+        if (placaCarro == null || !placaCarro.toUpperCase().matches("[A-Z]{3}[-]?[0-9][A-Z0-9][0-9]{2}")) {
+            throw new IllegalArgumentException("Erro: A placa '" + placaCarro + "' é inválida.");
+        }
         this.placaCarro = placaCarro;
     }
 
@@ -34,6 +37,10 @@ public class Veiculo {
     }
 
     public void setDono(Cliente dono) {
+        //Impede se o carro não tenha dono
+        if (dono == null) {
+            throw new IllegalArgumentException("Erro: Todo veículo precisa de um dono associado.");
+        }
         this.dono = dono;
     }
 
@@ -41,11 +48,37 @@ public class Veiculo {
         return cor;
     }
 
+    public void setCor(String cor) {
+        if (cor == null || cor.trim().isEmpty()) {
+            throw new IllegalArgumentException("Erro: A cor do veículo é obrigatória.");
+        }
+        this.cor = cor;
+    }
+
     public String getModelo() {
         return modelo;
     }
 
+    public void setModelo(String modelo) {
+        if(modelo == null || modelo.trim().isEmpty()){
+            throw new IllegalArgumentException("Erro: O modelo do veículo é obrigatório.");
+        }
+        this.modelo = modelo;
+    }
+
     public String getMarca() {
         return marca;
+    }
+
+    public void setMarca(String marca) {
+        if(marca == null || marca.trim().isEmpty()){
+            throw new IllegalArgumentException("Erro: A marca do veículo é obrigatória.");
+        }
+        this.marca = marca;
+    }
+
+    @Override
+    public String toString() {
+        return modelo + " " + cor + " (" + placaCarro + ")";
     }
 }
