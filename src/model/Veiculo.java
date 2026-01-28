@@ -20,6 +20,15 @@ public class Veiculo {
         setDono(dono);
     }
 
+    // 🔧 Construtor auxiliar para uso do DAO (leitura do CSV)
+    public Veiculo(String placaCarro) {
+        this.placaCarro = placaCarro;
+        this.cor = "Desconhecida";
+        this.modelo = "Desconhecido";
+        this.marca = "Desconhecida";
+        this.dono = new Cliente("00000000000");
+    }
+
     //getter e setters
     public String getPlacaCarro() {
         return placaCarro;
