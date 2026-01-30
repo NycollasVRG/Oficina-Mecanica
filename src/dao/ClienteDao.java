@@ -45,6 +45,7 @@ public class ClienteDao extends DaoGenerico<Cliente>{
         );
     }
 
+
     //metodo que vai servir para auxiliar na busca do proximo numero
     private int buscarProximoCodigo(){
         List<Cliente> lista = listar();
@@ -72,4 +73,11 @@ public class ClienteDao extends DaoGenerico<Cliente>{
         //chama o salvar do Dao generico para escrever no arquivo
         return super.salvar(c);
     }
+
+    @Override
+    public String getId(Cliente c) {
+        // Convertemos para String pois o DaoGenerico espera uma String
+        return String.valueOf(c.getCodCliente());
+    }
+
 }

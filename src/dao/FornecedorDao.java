@@ -22,4 +22,9 @@ public class FornecedorDao extends DaoGenerico<Fornecedor> {
                 dados[2]
         );
     }
+
+    @Override
+    public String getId(Fornecedor objeto) {
+        return "";
+    }
 }

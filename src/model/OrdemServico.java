@@ -40,8 +40,7 @@ public class OrdemServico {
         return total;
     }
 
-    // ✅ ESSE MÉTODO RESOLVE SEU ERRO
-    public void setTotal(double total) {
+        public void setTotal(double total) {
         this.total = total;
     }
 }

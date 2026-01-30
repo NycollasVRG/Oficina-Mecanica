@@ -42,4 +42,10 @@ public class VeiculoDao extends DaoGenerico<Veiculo> {
 
         return new Veiculo(placa, cor, modelo, marca, dono);
     }
+
+    @Override
+    public String getId(Veiculo v) {
+        return v.getPlacaCarro(); // A placa é a chave primária
+    }
+
 }

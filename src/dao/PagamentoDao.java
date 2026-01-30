@@ -22,4 +22,9 @@ public class PagamentoDao extends DaoGenerico<Pagamento> {
                 "Reconstrução completa não necessária para o projeto"
         );
     }
+
+    @Override
+    public String getId(Pagamento objeto) {
+        return "";
+    }
 }

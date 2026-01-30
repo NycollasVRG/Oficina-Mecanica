@@ -62,4 +62,9 @@ public class CompraDao extends DaoGenerico<Compra> {
 
         return new Compra(data, fornecedor, itens);
     }
+
+    @Override
+    public String getId(Compra objeto) {
+        return "";
+    }
 }

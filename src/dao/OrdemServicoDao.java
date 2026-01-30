@@ -78,4 +78,9 @@ public class OrdemServicoDao extends DaoGenerico<OrdemServico> {
         os.setTotal(total);
         return os;
     }
+
+    @Override
+    public String getId(OrdemServico objeto) {
+        return "";
+    }
 }

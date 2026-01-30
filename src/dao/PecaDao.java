@@ -24,4 +24,9 @@ public class PecaDao extends DaoGenerico<Peca> {
                 Integer.parseInt(dados[2])
         );
     }
+
+    @Override
+    public String getId(Peca objeto) {
+        return "";
+    }
 }
