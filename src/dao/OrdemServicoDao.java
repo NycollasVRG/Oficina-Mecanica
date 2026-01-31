@@ -56,7 +56,7 @@ public class OrdemServicoDao extends DaoGenerico<OrdemServico> {
 
         // Reconstrói peças
         String[] pecasCSV = partes[3].split("\\|");
-        for (String p : pecasCSV) {
+       /* for (String p : pecasCSV) {
             String[] d = p.split(",");
             Peca peca = new Peca(d[0], Double.parseDouble(d[2]), 0);
             pecas.add(new Utiliza(
@@ -66,6 +66,7 @@ public class OrdemServicoDao extends DaoGenerico<OrdemServico> {
             ));
         }
 
+        */
         // Reconstrói serviços
         String[] servicosCSV = partes[4].split("\\|");
         for (String s : servicosCSV) {

@@ -17,14 +17,14 @@ public class FornecedorDao extends DaoGenerico<Fornecedor> {
     public Fornecedor fromCSV(String linha) {
         String[] dados = linha.split(";");
         return new Fornecedor(
-                dados[0],
-                dados[1],
-                dados[2]
+                dados[0], // CNPJ
+                dados[1], // Nome
+                dados[2] // Telefone
         );
     }
 
     @Override
     public String getId(Fornecedor objeto) {
-        return "";
+        return objeto.getCnpj();
     }
 }

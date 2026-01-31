@@ -14,7 +14,7 @@ public class OrdemServicoService {
 
         double total = 0;
 
-        // 🔻 Baixa estoque das peças
+        /*// 🔻 Baixa estoque das peças
         for (Utiliza u : os.getPecas()) {
             pecaService.removerEstoque(
                     u.getPeca(),
@@ -22,6 +22,7 @@ public class OrdemServicoService {
             );
             total += u.getPeca().getPreco() * u.getQuantidade();
         }
+        */
 
         // 💰 Soma valor dos serviços
         for (Executa e : os.getServicos()) {

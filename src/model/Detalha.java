@@ -1,13 +1,15 @@
 package model;
 
+import java.math.BigDecimal;
+
 public class Detalha {
 
     private Peca peca;
     private int quantidade;
-    private double precoUnitario;
+    private BigDecimal precoUnitario;
 
     // construtor
-    public Detalha(Peca peca, int quantidade, double precoUnitario) {
+    public Detalha(Peca peca, int quantidade, BigDecimal precoUnitario) {
         setPeca(peca);
         setQuantidade(quantidade);
         setPrecoUnitario(precoUnitario);
@@ -36,12 +38,12 @@ public class Detalha {
         this.quantidade = quantidade;
     }
 
-    public double getPrecoUnitario() {
+    public BigDecimal getPrecoUnitario() {
         return precoUnitario;
     }
 
-    public void setPrecoUnitario(double precoUnitario) {
-        if (precoUnitario <= 0) {
+    public void setPrecoUnitario(BigDecimal precoUnitario) {
+        if (precoUnitario.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Erro: O preço unitário deve ser maior que zero.");
         }
         this.precoUnitario = precoUnitario;
