@@ -1,8 +1,8 @@
+import view.MenuPrincipal;
+
 public class Main {
-
     public static void main(String[] args) {
-
-        System.out.println("Lembrando da branch!");
-
+        // Inicia a interface gráfica
+        new MenuPrincipal().setVisible(true);
     }
 }
