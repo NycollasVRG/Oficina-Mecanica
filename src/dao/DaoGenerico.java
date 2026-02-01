@@ -30,6 +30,9 @@ public abstract class DaoGenerico <T>{
     //classe filha deve "ensinar" como transformar texto em objeto
     public abstract T fromCSV(String linha);
 
+    //classe filha deve "ensinar" qual é a chave única (ID/CPF/Código) do objeto
+    public abstract String getId(T objeto);
+
     public boolean salvar (T objeto){
         // quando der false no file writer vai significar que vai adicionar algo no arquivo
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(caminhoArquivo, true))){
@@ -69,4 +72,71 @@ public abstract class DaoGenerico <T>{
         }
         return lista;
     }
+
+    // essa funcao serve para listar apenas para buscar um especifico
+    public T buscarPorId(String id) {
+        List<T> lista = listar();
+        for (T obj : lista) {
+            if (getId(obj).equals(id)) {
+                return obj; // Retorna o objeto se achar
+            }
+        }
+        return null; // Retorna null se não achar
+    }
+
+    public boolean excluir(String id) {
+        List<T> lista = listar();
+        List<T> novaLista = new ArrayList<>();
+        boolean encontrou = false;
+
+        for (T obj : lista) {
+            // Se o ID for igual, a gente NÃO adiciona na nova lista (ou seja, remove)
+            if (getId(obj).equals(id)) {
+                encontrou = true;
+            } else {
+                novaLista.add(obj);
+            }
+        }
+
+        if (encontrou) {
+            reescreverArquivo(novaLista);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean atualizar(T novoObjeto) {
+        List<T> lista = listar();
+        boolean encontrou = false;
+
+        for (int i = 0; i < lista.size(); i++) {
+            T objAtual = lista.get(i);
+
+            // Verifica se é o mesmo ID para substituir
+            if (getId(objAtual).equals(getId(novoObjeto))) {
+                lista.set(i, novoObjeto); // Troca o antigo pelo novo
+                encontrou = true;
+                break;
+            }
+        }
+
+        if (encontrou) {
+            reescreverArquivo(lista);
+            return true;
+        }
+        return false;
+    }
+
+    private void reescreverArquivo(List<T> lista) {
+        // O false no FileWriter significa que NÃO é append, ele sobrescreve tudo
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(caminhoArquivo, false))) {
+            for (T obj : lista) {
+                bw.write(toCSV(obj));
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao reescrever arquivo: " + e.getMessage());
+        }
+    }
+
 }

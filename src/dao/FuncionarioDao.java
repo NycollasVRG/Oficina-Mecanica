@@ -77,4 +77,9 @@ public class FuncionarioDao extends DaoGenerico<Funcionario>{
         return super.salvar(f);
     }
 
+    @Override
+    public String getId(Funcionario f) {
+        return String.valueOf(f.getMatricula());
+    }
+
 }

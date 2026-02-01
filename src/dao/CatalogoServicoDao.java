@@ -2,23 +2,52 @@ package dao;
 
 import model.CatalogoServico;
 
-import java.util.ArrayList;
+
+import java.math.BigDecimal;
 import java.util.List;
 
-public class CatalogoServicoDao {
+public class CatalogoServicoDao extends DaoGenerico<CatalogoServico>{
 
-    private static List<CatalogoServico> servicos = new ArrayList<>();
-
-    public boolean salvar(CatalogoServico servico) {
-        servicos.add(servico);
-        return true;
+    public CatalogoServicoDao() {
+        super("catalogo_servicos.csv");
     }
 
-    public List<CatalogoServico> listar() {
-        return servicos;
+    private int gerarProximoId() {
+        List<CatalogoServico> lista = listar();
+        int maiorId = 0;
+        for (CatalogoServico cs : lista) {
+            if (cs.getId() > maiorId) {
+                maiorId = cs.getId();
+            }
+        }
+        return maiorId + 1;
     }
 
-    public boolean remover(CatalogoServico servico) {
-        return servicos.remove(servico);
+    @Override
+    public String toCSV(CatalogoServico cs) {
+        // Se for novo (ID 0), gera um ID
+        if (cs.getId() == 0) {
+            cs.setId(gerarProximoId());
+        }
+        // Formato: ID;Descricao;Preco
+        return cs.getId() + ";" +
+                cs.getDescricao() + ";" +
+                cs.getPreco();
+    }
+
+    @Override
+    public CatalogoServico fromCSV(String linha) {
+        String[] dados = linha.split(";");
+        // Reconstrói o objeto: ID, Descrição, Preço (BigDecimal)
+        return new CatalogoServico(
+                Integer.parseInt(dados[0]),
+                dados[1],
+                new BigDecimal(dados[2])
+        );
+    }
+
+    @Override
+    public String getId(CatalogoServico cs) {
+        return String.valueOf(cs.getId());
     }
 }

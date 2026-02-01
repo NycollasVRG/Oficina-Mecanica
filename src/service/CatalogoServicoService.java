@@ -3,6 +3,7 @@ package service;
 import dao.CatalogoServicoDao;
 import model.CatalogoServico;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CatalogoServicoService {
@@ -10,9 +11,19 @@ public class CatalogoServicoService {
     private CatalogoServicoDao dao = new CatalogoServicoDao();
 
     // CREATE
-    public boolean cadastrarServico(String descricao, double preco) {
-        CatalogoServico servico = new CatalogoServico(descricao, preco);
-        return dao.salvar(servico);
+    public void cadastrarServico(CatalogoServico servico) {
+        // Validação de Negócio
+        if (servico.getPreco().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O preço do serviço deve ser maior que zero.");
+        }
+
+        dao.salvar(servico);
+    }
+
+    // Sobrecarga útil para a Main (Cria e Salva)
+    public void cadastrarServico(String descricao, BigDecimal preco) {
+        CatalogoServico novo = new CatalogoServico(descricao, preco);
+        cadastrarServico(novo);
     }
 
     // READ
@@ -20,14 +31,29 @@ public class CatalogoServicoService {
         return dao.listar();
     }
 
+    public CatalogoServico buscarPorId(int id) {
+        return dao.buscarPorId(String.valueOf(id));
+    }
+
     // UPDATE
-    public boolean atualizarPreco(CatalogoServico servico, double novoPreco) {
-        servico.setPreco(novoPreco);
-        return true;
+    public void atualizarServico(CatalogoServico servico) {
+        // Validação antes de gravar
+        if (servico.getPreco().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O preço não pode ser negativo ou zero.");
+        }
+
+        boolean sucesso = dao.atualizar(servico);
+        if (!sucesso) {
+            throw new RuntimeException("Erro ao atualizar o serviço no banco de dados.");
+        }
     }
 
     // DELETE
-    public boolean removerServico(CatalogoServico servico) {
-        return dao.remover(servico);
+    public void removerServico(int id) {
+        boolean sucesso = dao.excluir(String.valueOf(id));
+
+        if (!sucesso) {
+            throw new RuntimeException("Não foi possível excluir. Serviço não encontrado.");
+        }
     }
 }

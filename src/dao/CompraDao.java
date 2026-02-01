@@ -2,30 +2,58 @@ package dao;
 
 import model.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CompraDao extends DaoGenerico<Compra> {
 
+    // Dependências para buscar os objetos reais
+    private FornecedorDao fornecedorDao;
+    private PecaDao pecaDao;
+
     public CompraDao() {
         super("compras.csv");
+        this.fornecedorDao = new FornecedorDao();
+        this.pecaDao = new PecaDao();
+    }
+
+    // Gerador de ID igual ao da Peça
+    public int gerarProximoId() {
+        List<Compra> lista = listar();
+        int maiorId = 0;
+        for (Compra c : lista) {
+            if (c.getIdCompra() > maiorId) {
+                maiorId = c.getIdCompra();
+            }
+        }
+        return maiorId + 1;
     }
 
     @Override
     public String toCSV(Compra compra) {
-        StringBuilder sb = new StringBuilder();
+        if (compra.getIdCompra() == 0) {
+            compra.setIdCompra(gerarProximoId());
+        }
 
-        sb.append(compra.getData()).append(";");
+        StringBuilder sb = new StringBuilder();
+        // Cabeçalho da Compra: ID;Data;CNPJ_Fornecedor;
+        sb.append(compra.getIdCompra()).append(";");
+        sb.append(compra.getData().toString()).append(";"); // LocalDate iso (YYYY-MM-DD)
         sb.append(compra.getFornecedor().getCnpj()).append(";");
 
+        // Lista de Itens: ID_Peca,Qtd,Preco|ID_Peca,Qtd,Preco
         for (Detalha d : compra.getItens()) {
-            sb.append(d.getPeca().getNome()).append(",");
+            sb.append(d.getPeca().getIdPeca()).append(","); // Salva só o ID da peça
             sb.append(d.getQuantidade()).append(",");
             sb.append(d.getPrecoUnitario()).append("|");
         }
 
-        // remove o último "|"
-        sb.deleteCharAt(sb.length() - 1);
+        // Remove o último "|" se houver itens
+        if (!compra.getItens().isEmpty()) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
 
         return sb.toString();
     }
@@ -33,33 +61,48 @@ public class CompraDao extends DaoGenerico<Compra> {
     @Override
     public Compra fromCSV(String linha) {
         String[] partes = linha.split(";");
-        String data = partes[0];
-        String cnpjFornecedor = partes[1];
 
-        // fornecedor “fake” só para reconstrução
-        Fornecedor fornecedor = new Fornecedor(cnpjFornecedor, "Fornecedor carregado", "N/A");
+        int id = Integer.parseInt(partes[0]);
+        LocalDate data = LocalDate.parse(partes[1]); // Converte String p/ LocalDate
+        String cnpjFornecedor = partes[2];
+
+        // BUSCA O FORNECEDOR REAL NO ARQUIVO DELE
+        Fornecedor fornecedor = fornecedorDao.buscarPorId(cnpjFornecedor);
+        if (fornecedor == null) {
+            // Fallback caso o fornecedor tenha sido deletado (segurança)
+            fornecedor = new Fornecedor(cnpjFornecedor, "[Removido]", "N/A");
+        }
 
         List<Detalha> itens = new ArrayList<>();
 
-        String[] itensCSV = partes[2].split("\\|");
-        for (String item : itensCSV) {
-            String[] dadosItem = item.split(",");
+        // Verifica se tem itens (pode estar vazio)
+        if (partes.length > 3 && !partes[3].isEmpty()) {
+            String[] itensCSV = partes[3].split("\\|");
 
-            Peca peca = new Peca(
-                    dadosItem[0],
-                    Double.parseDouble(dadosItem[2]),
-                    0
-            );
+            for (String itemStr : itensCSV) {
+                String[] dadosItem = itemStr.split(",");
 
-            Detalha detalha = new Detalha(
-                    peca,
-                    Integer.parseInt(dadosItem[1]),
-                    Double.parseDouble(dadosItem[2])
-            );
+                int idPeca = Integer.parseInt(dadosItem[0]);
+                int quantidade = Integer.parseInt(dadosItem[1]);
+                BigDecimal preco = new BigDecimal(dadosItem[2]);
 
-            itens.add(detalha);
+                // BUSCA A PEÇA REAL
+                Peca peca = pecaDao.buscarPorId(String.valueOf(idPeca));
+                if (peca == null) {
+                    // Fallback
+                    peca = new Peca(idPeca, "[Peça Removida]", BigDecimal.ZERO, 0);
+                }
+
+                Detalha detalha = new Detalha(peca, quantidade, preco);
+                itens.add(detalha);
+            }
         }
 
-        return new Compra(data, fornecedor, itens);
+        return new Compra(id, data, fornecedor, itens);
+    }
+
+    @Override
+    public String getId(Compra c) {
+        return String.valueOf(c.getIdCompra());
     }
 }

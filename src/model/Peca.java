@@ -1,19 +1,38 @@
 package model;
 
+import java.math.BigDecimal;
+
 public class Peca {
 
+    private int idPeca;
     private String nome;
-    private double preco;
+    private BigDecimal preco;
     private int quantidadeEstoque;
 
     // construtor
-    public Peca(String nome, double preco, int quantidadeEstoque) {
+
+    public Peca(int idPeca, String nome, BigDecimal preco, int quantidadeEstoque) {
+        this.idPeca = idPeca;
         setNome(nome);
         setPreco(preco);
         setQuantidadeEstoque(quantidadeEstoque);
     }
 
+    // Construtor sem ID (útil para quando for criar uma peça nova que ainda não foi pro banco)
+    public Peca(String nome, BigDecimal preco, int quantidadeEstoque) {
+        this(0, nome, preco, quantidadeEstoque);
+    }
+
     // getters e setters
+
+    public int getIdPeca() {
+        return idPeca;
+    }
+
+    public void setId(int idPeca) {
+        this.idPeca = idPeca;
+    }
+
     public String getNome() {
         return nome;
     }
@@ -25,12 +44,12 @@ public class Peca {
         this.nome = nome;
     }
 
-    public double getPreco() {
+    public BigDecimal getPreco() {
         return preco;
     }
 
-    public void setPreco(double preco) {
-        if (preco <= 0) {
+    public void setPreco(BigDecimal preco) {
+        if (preco == null || preco.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Erro: O preço da peça deve ser maior que zero.");
         }
         this.preco = preco;

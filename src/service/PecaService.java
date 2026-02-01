@@ -17,21 +17,65 @@ public class PecaService {
         return pecaDao.listar();
     }
 
-    // ENTRADA de estoque (Compra)
-    public void adicionarEstoque(Peca peca, int quantidade) {
-        if (quantidade <= 0) {
-            throw new IllegalArgumentException("Erro: Quantidade inválida para entrada de estoque.");
-        }
-        peca.setQuantidadeEstoque(peca.getQuantidadeEstoque() + quantidade);
-        pecaDao.salvar(peca);
+    public Peca buscarPorId(int id) {
+        return pecaDao.buscarPorId(String.valueOf(id));
     }
 
-    // SAÍDA de estoque (Ordem de Serviço - Membro 3)
-    public void removerEstoque(Peca peca, int quantidade) {
-        if (quantidade <= 0 || quantidade > peca.getQuantidadeEstoque()) {
-            throw new IllegalArgumentException("Erro: Estoque insuficiente.");
-        }
-        peca.setQuantidadeEstoque(peca.getQuantidadeEstoque() - quantidade);
-        pecaDao.salvar(peca);
+    public boolean atualizarPeca(Peca peca) {
+        return pecaDao.atualizar(peca);
     }
+
+    public boolean removerPeca(int id) {
+        // Busca a peça para ver o estoque atual
+        Peca peca = buscarPorId(id);
+
+        if (peca != null && peca.getQuantidadeEstoque() > 0) {
+            System.out.println("Erro: Não é possível remover uma peça que ainda possui estoque físico (" + peca.getQuantidadeEstoque() + ").");
+            return false; // Bloqueia a exclusão
+        }
+
+        // Se estoque for 0, permite excluir
+        return pecaDao.excluir(String.valueOf(id));
+    }
+
+    public void adicionarEstoque(Peca peca, int quantidade) {
+        // Validação
+        if (quantidade <= 0) {
+            throw new IllegalArgumentException("Erro: A quantidade para adicionar deve ser maior que zero.");
+        }
+
+        int estoqueAtual = peca.getQuantidadeEstoque();
+        int novoEstoque = estoqueAtual + quantidade;
+
+        peca.setQuantidadeEstoque(novoEstoque);
+
+        boolean sucesso = pecaDao.atualizar(peca);
+
+        if (!sucesso) {
+            throw new RuntimeException("Erro ao atualizar o banco de dados para a peça: " + peca.getNome());
+        }
+    }
+
+    public void removerEstoque(Peca peca, int quantidade) {
+        if (quantidade <= 0) {
+            throw new IllegalArgumentException("Erro: A quantidade para remover deve ser maior que zero.");
+        }
+
+        int estoqueAtual = peca.getQuantidadeEstoque();
+
+        if (quantidade > estoqueAtual) {
+            throw new IllegalArgumentException("Erro: Estoque insuficiente. Atual: " + estoqueAtual + ", Solicitado: " + quantidade);
+        }
+
+        int novoEstoque = estoqueAtual - quantidade;
+
+        peca.setQuantidadeEstoque(novoEstoque);
+
+        boolean sucesso = pecaDao.atualizar(peca);
+
+        if (!sucesso) {
+            throw new RuntimeException("Erro ao atualizar o banco de dados para a peça: " + peca.getNome());
+        }
+    }
+
 }

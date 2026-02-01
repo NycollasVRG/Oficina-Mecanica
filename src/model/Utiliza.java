@@ -1,12 +1,17 @@
 package model;
 
+import java.math.BigDecimal;
+
 public class Utiliza {
 
     private Peca peca;
     private int quantidade;
-    private double precoUnitario;
+    private BigDecimal precoUnitario; // Preço de VENDA na hora da OS
 
-    public Utiliza(Peca peca, int quantidade, double precoUnitario) {
+    public Utiliza(Peca peca, int quantidade, BigDecimal precoUnitario) {
+        if (peca == null) throw new IllegalArgumentException("Peça inválida.");
+        if (quantidade <= 0) throw new IllegalArgumentException("Quantidade deve ser positiva.");
+
         this.peca = peca;
         this.quantidade = quantidade;
         this.precoUnitario = precoUnitario;
@@ -20,11 +25,11 @@ public class Utiliza {
         return quantidade;
     }
 
-    public double getPrecoUnitario() {
+    public BigDecimal getPrecoUnitario() {
         return precoUnitario;
     }
 
-    public double getSubtotal() {
-        return quantidade * precoUnitario;
+    public BigDecimal getSubtotal() {
+        return precoUnitario.multiply(new BigDecimal(quantidade));
     }
 }
