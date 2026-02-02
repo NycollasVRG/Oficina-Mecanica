@@ -62,7 +62,7 @@ public class PagamentoDao extends DaoGenerico<Pagamento> {
         if (os == null) {
             // Cria um veículo fake e uma OS fake só para o pagamento não ficar órfão na memória
             Veiculo veiculoFake = new Veiculo("N/A");
-            os = new OrdemServico(idOs, data, veiculoFake, "DESCONHECIDA");
+            os = new OrdemServico(idOs, data, veiculoFake, null, "DESCONHECIDA", "N/A");
         }
 
         // Retorna o pagamento reconstruído
