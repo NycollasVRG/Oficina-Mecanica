@@ -33,7 +33,7 @@ public class TelaNovaOrdemServico extends JFrame {
     // ================== CONSTRUTOR 1: NOVA OS ==================
     public TelaNovaOrdemServico() {
         montarTela();
-        // Na criação, o status padrão é ABERTA e fica bloqueado
+        // O status padrão é ABERTA e fica bloqueado
         comboStatus.setSelectedItem("ABERTA");
         comboStatus.setEnabled(false);
     }
@@ -166,7 +166,7 @@ public class TelaNovaOrdemServico extends JFrame {
 
             // Seleciona e Libera o Status
             comboStatus.setSelectedItem(ordemEdicao.getStatus());
-            comboStatus.setEnabled(true); // Na edição pode mudar!
+            comboStatus.setEnabled(true);
 
             // Seleciona Veículo
             if (ordemEdicao.getVeiculo() != null) {
@@ -204,13 +204,13 @@ public class TelaNovaOrdemServico extends JFrame {
             return;
         }
 
-        // Pega o status escolhido (ou o padrão "ABERTA")
+        // Pega o status escolhido
         String statusEscolhido = (String) comboStatus.getSelectedItem();
 
         try {
             if (ordemEdicao == null) {
                 // === MODO CRIAR ===
-                // Criação padrão (Status sempre vem ABERTA no construtor de 3 args)
+                // Criação padrão
                 OrdemServico novaOS = new OrdemServico(
                         veiculoSelecionado,
                         funcionarioSelecionado,
@@ -245,7 +245,7 @@ public class TelaNovaOrdemServico extends JFrame {
         }
     }
 
-    // --- Métodos Auxiliares de Carregamento e Estilo (Iguais) ---
+    // --- Métodos Auxiliares de Carregamento e Estilo ---
     private void carregarVeiculos() {
         modeloVeiculos.setRowCount(0);
         for (Veiculo v : veiculoService.listarVeiculos()) {

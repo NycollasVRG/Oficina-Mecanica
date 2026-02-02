@@ -6,7 +6,7 @@ import java.util.List;
 
 public class VeiculoDao extends DaoGenerico<Veiculo> {
 
-    // Precisamos do ClienteDao para buscar os dados reais do dono
+
     private ClienteDao clienteDao;
 
     public VeiculoDao() {
@@ -41,9 +41,8 @@ public class VeiculoDao extends DaoGenerico<Veiculo> {
         String marca = dados[3];
         String cpfDono = dados[4];
 
-        // --- A CORREÇÃO ESTÁ AQUI ---
 
-        // 1. Em vez de criar um cliente fake, buscamos o cliente real na lista
+        //Buscamos o cliente real na lista
         Cliente donoReal = null;
         List<Cliente> listaClientes = clienteDao.listar();
 
@@ -51,7 +50,7 @@ public class VeiculoDao extends DaoGenerico<Veiculo> {
             // Compara o CPF do arquivo do carro com o CPF dos clientes cadastrados
             if (c.getCpf().equals(cpfDono)) {
                 donoReal = c;
-                break; // Achou! Para o loop.
+                break;
             }
         }
 

@@ -56,7 +56,7 @@ public class MenuPrincipal extends JFrame {
         painelPrincipal.add(btnSair);
     }
 
-    // Método auxiliar para criar botões padronizados
+    // Botões padronizados
     private JButton criarBotao(String texto, Color corTema) {
         JButton btn = new JButton(texto);
 
@@ -68,10 +68,5 @@ public class MenuPrincipal extends JFrame {
         btn.setBorder(BorderFactory.createLineBorder(corTema, 2));
 
         return btn;
-    }
-
-    // Main para teste
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MenuPrincipal().setVisible(true));
     }
 }
