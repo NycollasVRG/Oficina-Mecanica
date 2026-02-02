@@ -64,7 +64,7 @@ public class TelaListaOrdemServico extends JFrame {
         JButton btnExcluir = criarBotao("Excluir", new Color(231, 76, 60));  // Vermelho
         JButton btnRecarregar = criarBotao("Recarregar", new Color(149, 165, 166)); // Cinza
 
-        // ADICIONA OS BOTÕES AO PAINEL (Esta parte é crucial para eles aparecerem)
+        // ADICIONA OS BOTÕES AO PAINEL
         pBotoes.add(btnNovo);
         pBotoes.add(btnEditar);
         pBotoes.add(btnExcluir);
@@ -100,7 +100,7 @@ public class TelaListaOrdemServico extends JFrame {
                 OrdemServico osParaEditar = dao.buscarPorId(String.valueOf(idOS));
 
                 if (osParaEditar != null) {
-                    // Abre a tela passando a OS (Usa o segundo construtor que criamos)
+                    // Abre a tela passando a OS
                     TelaNovaOrdemServico t = new TelaNovaOrdemServico(osParaEditar);
                     t.addWindowListener(new WindowAdapter() {
                         @Override

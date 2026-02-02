@@ -59,7 +59,7 @@ public class Funcionario extends Pessoa{
         this.dataAdmissao = dataAdmissao;
     }
 
-    // Esse método serve para verificar igualdade (importante para o ComboBox selecionar o item certo)
+    // Esse método serve para verificar igualdade
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,7 +68,7 @@ public class Funcionario extends Pessoa{
         return matricula != null ? matricula.equals(that.matricula) : that.matricula == null;
     }
 
-    // Esse método faz aparecer o NOME na caixinha de seleção, e não o código de memória
+    // Esse método faz aparecer o NOME na caixinha de seleção
     @Override
     public String toString() {
         return getNome();
