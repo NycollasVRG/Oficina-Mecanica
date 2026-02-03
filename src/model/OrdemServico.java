@@ -1,5 +1,6 @@
 package model;
 
+import java.math.BigDecimal; // <--- Importante para o cálculo
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,27 @@ public class OrdemServico {
         this(0, LocalDate.now(), veiculo, responsavel, descricao, "ABERTA");
     }
 
+    // --- MÉTODOS NOVOS (INTEGRAÇÃO COM ESTOQUE) ---
+
+    // Adiciona uma peça na lista facilitando a criação do objeto Utiliza
+    public void adicionarPeca(Peca peca, int qtd) {
+        // Pega o preço atual da peça para registrar no histórico
+        Utiliza item = new Utiliza(peca, qtd, peca.getPreco());
+        this.itensPecas.add(item);
+    }
+
+    // Calcula quanto deu o total de peças dessa OS
+    public BigDecimal getValorTotalPecas() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (Utiliza item : itensPecas) {
+            // Usa o método getSubtotal() da classe Utiliza que você criou
+            total = total.add(item.getSubtotal());
+        }
+        return total;
+    }
+
+    // --- GETTERS E SETTERS PADRÃO ---
+
     public int getNumero() {
         return numero;
     }
@@ -48,16 +70,33 @@ public class OrdemServico {
         return data;
     }
 
+    // (Adicionado caso precise alterar data em edição futura)
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
     public Veiculo getVeiculo() {
         return veiculo;
+    }
+
+    public void setVeiculo(Veiculo veiculo) {
+        this.veiculo = veiculo;
     }
 
     public Funcionario getResponsavel() {
         return responsavel;
     }
 
+    public void setResponsavel(Funcionario responsavel) {
+        this.responsavel = responsavel;
+    }
+
     public String getDescricao() {
         return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public String getStatus() {

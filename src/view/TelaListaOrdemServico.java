@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class TelaListaOrdemServico extends JFrame {
 
         // ===== TABELA =====
         modelo = new DefaultTableModel(
-                new String[]{"Nº OS", "Data", "Veículo", "Responsável", "Status"}, 0
+                new String[]{"Nº OS", "Data", "Veículo", "Responsável", "Status", "Total Peças"}, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -59,12 +60,11 @@ public class TelaListaOrdemServico extends JFrame {
         JPanel pBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         pBotoes.setBackground(Color.WHITE);
 
-        JButton btnNovo = criarBotao("Novo", new Color(46, 204, 113));       // Verde
-        JButton btnEditar = criarBotao("Editar", new Color(52, 152, 219));   // Azul
-        JButton btnExcluir = criarBotao("Excluir", new Color(231, 76, 60));  // Vermelho
-        JButton btnRecarregar = criarBotao("Recarregar", new Color(149, 165, 166)); // Cinza
+        JButton btnNovo = criarBotao("Novo", new Color(46, 204, 113));
+        JButton btnEditar = criarBotao("Editar", new Color(52, 152, 219));
+        JButton btnExcluir = criarBotao("Excluir", new Color(231, 76, 60));
+        JButton btnRecarregar = criarBotao("Recarregar", new Color(149, 165, 166));
 
-        // ADICIONA OS BOTÕES AO PAINEL
         pBotoes.add(btnNovo);
         pBotoes.add(btnEditar);
         pBotoes.add(btnExcluir);
@@ -79,7 +79,7 @@ public class TelaListaOrdemServico extends JFrame {
 
         // --- Ação: NOVO ---
         btnNovo.addActionListener(e -> {
-            TelaNovaOrdemServico t = new TelaNovaOrdemServico(); // Construtor vazio
+            TelaNovaOrdemServico t = new TelaNovaOrdemServico();
             t.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
@@ -93,14 +93,10 @@ public class TelaListaOrdemServico extends JFrame {
         btnEditar.addActionListener(e -> {
             int linha = tabela.getSelectedRow();
             if (linha >= 0) {
-                // Pega o ID da tabela
                 int idOS = (int) tabela.getValueAt(linha, 0);
-
-                // Busca o objeto completo no banco (DAO)
                 OrdemServico osParaEditar = dao.buscarPorId(String.valueOf(idOS));
 
                 if (osParaEditar != null) {
-                    // Abre a tela passando a OS
                     TelaNovaOrdemServico t = new TelaNovaOrdemServico(osParaEditar);
                     t.addWindowListener(new WindowAdapter() {
                         @Override
@@ -122,16 +118,13 @@ public class TelaListaOrdemServico extends JFrame {
             int linha = tabela.getSelectedRow();
             if (linha >= 0) {
                 int idOS = (int) tabela.getValueAt(linha, 0);
-
                 int confirm = JOptionPane.showConfirmDialog(this,
                         "Tem certeza que deseja excluir a OS #" + idOS + "?",
                         "Excluir", JOptionPane.YES_NO_OPTION);
 
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
-                        // Chama excluir convertendo int para String
                         boolean apagou = dao.excluir(String.valueOf(idOS));
-
                         if(apagou) {
                             atualizar();
                             JOptionPane.showMessageDialog(this, "OS excluída com sucesso.");
@@ -147,29 +140,32 @@ public class TelaListaOrdemServico extends JFrame {
             }
         });
 
-        // --- Ação: RECARREGAR ---
         btnRecarregar.addActionListener(e -> atualizar());
     }
 
     private void atualizar() {
         modelo.setRowCount(0);
-        // Força recarregar do arquivo criando nova instância do DAO
-        dao = new OrdemServicoDao();
+        dao = new OrdemServicoDao(); // Recarrega arquivo
         List<OrdemServico> lista = dao.listar();
 
-        // Ordena (Decrescente)
+        // Ordena por ID decrescente (mais recentes primeiro)
         lista.sort((a, b) -> Integer.compare(b.getNumero(), a.getNumero()));
 
         for (OrdemServico os : lista) {
             String nomeResp = (os.getResponsavel() != null) ? os.getResponsavel().getNome() : "Não Atribuído";
             String dadosVeiculo = (os.getVeiculo() != null) ? os.getVeiculo().getPlacaCarro() + " - " + os.getVeiculo().getModelo() : "Excluído";
 
+            // Calcula o total usando o método que criamos na Model
+            BigDecimal total = os.getValorTotalPecas();
+            if (total == null) total = BigDecimal.ZERO;
+
             modelo.addRow(new Object[]{
                     os.getNumero(),
                     os.getData().format(fmt),
                     dadosVeiculo,
                     nomeResp,
-                    os.getStatus()
+                    os.getStatus(),
+                    "R$ " + total.toString().replace(".", ",") // Formatação simples de moeda
             });
         }
     }
@@ -193,9 +189,15 @@ public class TelaListaOrdemServico extends JFrame {
         t.getTableHeader().setBackground(new Color(240, 240, 240));
         t.setShowVerticalLines(false);
 
+        // Centralizar colunas de ID e Status
         DefaultTableCellRenderer centro = new DefaultTableCellRenderer();
         centro.setHorizontalAlignment(JLabel.CENTER);
-        t.getColumnModel().getColumn(0).setCellRenderer(centro);
-        t.getColumnModel().getColumn(4).setCellRenderer(centro);
+        t.getColumnModel().getColumn(0).setCellRenderer(centro); // ID
+        t.getColumnModel().getColumn(4).setCellRenderer(centro); // Status
+
+        // Alinhar valor financeiro à Direita
+        DefaultTableCellRenderer direita = new DefaultTableCellRenderer();
+        direita.setHorizontalAlignment(JLabel.RIGHT);
+        t.getColumnModel().getColumn(5).setCellRenderer(direita); // Total
     }
 }
