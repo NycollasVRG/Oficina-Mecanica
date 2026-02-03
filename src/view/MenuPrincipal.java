@@ -22,7 +22,7 @@ public class MenuPrincipal extends JFrame {
 
         // Usa um painel principal com borda para dar margem nas laterais
         JPanel painelPrincipal = new JPanel();
-        painelPrincipal.setLayout(new GridLayout(5, 1, 15, 15)); // Espaço maior entre botões (15px)
+        painelPrincipal.setLayout(new GridLayout(7, 1, 15, 15)); // Espaço maior entre botões (15px)
         painelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20)); // Margem de 20px em volta de tudo
         painelPrincipal.setBackground(new Color(245, 245, 250)); // Fundo levemente cinza/azulado
 
@@ -38,18 +38,24 @@ public class MenuPrincipal extends JFrame {
         JButton btnFuncionario = criarBotao("Gerenciar Funcionários", new Color(60, 179, 113)); // Verde Mar
         JButton btnVeiculo = criarBotao("Gerenciar Veículos", new Color(218, 165, 32)); // Dourado
         JButton btnSair = criarBotao("Sair do Sistema", new Color(205, 92, 92)); // Vermelho Índio
+        JButton btnPeca = criarBotao("Cadastro de Peças", new Color(138, 43, 226)); // Roxo
+        JButton btnEstoque = criarBotao("Controle de Estoque", new Color(255, 140, 0)); // Laranja
 
         // Ações
         btnCliente.addActionListener(e -> new TelaCliente().setVisible(true));
         btnFuncionario.addActionListener(e -> new TelaFuncionario().setVisible(true));
         btnVeiculo.addActionListener(e -> new TelaVeiculo().setVisible(true));
         btnSair.addActionListener(e -> System.exit(0));
+        btnPeca.addActionListener(e -> new TelaCadastroPeca().setVisible(true));
+        btnEstoque.addActionListener(e -> new TelaControleEstoque().setVisible(true));
 
         // Adicionando
         add(lblTitulo);
         add(btnCliente);
         add(btnFuncionario);
         add(btnVeiculo);
+        add(btnPeca);
+        add(btnEstoque);
         add(btnSair);
     }
 
