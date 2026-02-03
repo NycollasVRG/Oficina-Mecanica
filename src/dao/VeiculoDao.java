@@ -2,19 +2,22 @@ package dao;
 
 import model.Cliente;
 import model.Veiculo;
+import java.util.List;
 
 public class VeiculoDao extends DaoGenerico<Veiculo> {
 
-    //nome do arquivo que sera criado na pasta data/
+
+    private ClienteDao clienteDao;
+
     public VeiculoDao() {
         super("veiculos.txt");
+        this.clienteDao = new ClienteDao(); // Inicializa o DAO de cliente
     }
 
     @Override
     public String toCSV(Veiculo v) {
         String cpfDono = "000.000.000-00";
 
-        //verifica se o carro tem dono
         if(v.getDono() != null){
             cpfDono = v.getDono().getCpf();
         }
@@ -25,7 +28,7 @@ public class VeiculoDao extends DaoGenerico<Veiculo> {
                 v.getModelo(),
                 v.getMarca(),
                 cpfDono
-                );
+        );
     }
 
     @Override
@@ -38,14 +41,29 @@ public class VeiculoDao extends DaoGenerico<Veiculo> {
         String marca = dados[3];
         String cpfDono = dados[4];
 
-        Cliente dono = new Cliente(cpfDono);
 
-        return new Veiculo(placa, cor, modelo, marca, dono);
+        //Buscamos o cliente real na lista
+        Cliente donoReal = null;
+        List<Cliente> listaClientes = clienteDao.listar();
+
+        for (Cliente c : listaClientes) {
+            // Compara o CPF do arquivo do carro com o CPF dos clientes cadastrados
+            if (c.getCpf().equals(cpfDono)) {
+                donoReal = c;
+                break;
+            }
+        }
+
+        // 2. Fallback: Se o cliente foi apagado ou não achou, cria o temporário para não dar erro
+        if (donoReal == null) {
+            donoReal = new Cliente(cpfDono);
+        }
+
+        return new Veiculo(placa, cor, modelo, marca, donoReal);
     }
 
     @Override
     public String getId(Veiculo v) {
-        return v.getPlacaCarro(); // A placa é a chave primária
+        return v.getPlacaCarro();
     }
-
 }

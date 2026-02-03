@@ -58,4 +58,19 @@ public class Funcionario extends Pessoa{
     public void setDataAdmissao(LocalDate dataAdmissao) {
         this.dataAdmissao = dataAdmissao;
     }
+
+    // Esse método serve para verificar igualdade
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Funcionario that = (Funcionario) o;
+        return matricula != null ? matricula.equals(that.matricula) : that.matricula == null;
+    }
+
+    // Esse método faz aparecer o NOME na caixinha de seleção
+    @Override
+    public String toString() {
+        return getNome();
+    }
 }

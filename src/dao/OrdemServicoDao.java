@@ -9,63 +9,73 @@ import java.util.List;
 
 public class OrdemServicoDao extends DaoGenerico<OrdemServico> {
 
-    private PecaDao pecaDao;
-    private CatalogoServicoDao catalogoDao;
+    private PecaDao pecaDao = new PecaDao();
+    private CatalogoServicoDao catalogoDao = new CatalogoServicoDao();
+    private FuncionarioDao funcionarioDao = new FuncionarioDao();
+    private VeiculoDao veiculoDao = new VeiculoDao();
 
     public OrdemServicoDao() {
         super("ordens_servico.csv");
-        this.pecaDao = new PecaDao();
-        this.catalogoDao = new CatalogoServicoDao();
     }
 
     private int gerarProximoId() {
-        List<OrdemServico> lista = listar();
-        int maiorId = 0;
-        for (OrdemServico os : lista) {
-            if (os.getNumero() > maiorId) {
-                maiorId = os.getNumero();
+        int maior = 0;
+        for (OrdemServico os : listar()) {
+            if (os.getNumero() > maior) {
+                maior = os.getNumero();
             }
         }
-        return maiorId + 1;
+        return maior + 1;
     }
 
     @Override
     public String toCSV(OrdemServico os) {
-        // Se for nova OS (ID 0), gera um número novo
         if (os.getNumero() == 0) {
             os.setNumero(gerarProximoId());
         }
 
         StringBuilder sb = new StringBuilder();
 
-        // CABEÇALHO (ID;Data;Placa;Status)
+        // ID;DATA;PLACA;MATRICULA_FUNC;DESCRICAO;STATUS
         sb.append(os.getNumero()).append(";");
         sb.append(os.getData()).append(";");
-        // ATENÇÃO: Usando getPlacaCarro() conforme seu modelo
-        sb.append(os.getVeiculo().getPlacaCarro()).append(";");
+
+        // Veículo
+        String placa = (os.getVeiculo() != null) ? os.getVeiculo().getPlacaCarro() : "SEM-PLACA";
+        sb.append(placa).append(";");
+
+        // --- Salvar a MATRÍCULA---
+        String idFunc = "0";
+        if (os.getResponsavel() != null && os.getResponsavel().getMatricula() != null) {
+            idFunc = String.valueOf(os.getResponsavel().getMatricula());
+        }
+        sb.append(idFunc).append(";");
+        // ----------------------------------------------------
+
+        sb.append(os.getDescricao().replace(";", ",")).append(";");
         sb.append(os.getStatus()).append(";");
 
-        // LISTA DE PEÇAS (Separadas por | e campos por ,)
-        if (os.getItensPecas() != null && !os.getItensPecas().isEmpty()) {
+        // PEÇAS
+        if (!os.getItensPecas().isEmpty()) {
             for (Utiliza u : os.getItensPecas()) {
-                sb.append(u.getPeca().getIdPeca()).append(","); // Salva o ID da peça
+                sb.append(u.getPeca().getIdPeca()).append(",");
                 sb.append(u.getQuantidade()).append(",");
                 sb.append(u.getPrecoUnitario()).append("|");
             }
-            sb.deleteCharAt(sb.length() - 1); // Remove último pipe |
+            sb.deleteCharAt(sb.length() - 1);
         } else {
             sb.append("VAZIO");
         }
 
-        sb.append(";"); // Separador entre a lista de peças e a de serviços
+        sb.append(";");
 
-        // LISTA DE SERVIÇOS
-        if (os.getItensServicos() != null && !os.getItensServicos().isEmpty()) {
+        // SERVIÇOS
+        if (!os.getItensServicos().isEmpty()) {
             for (Executa e : os.getItensServicos()) {
-                sb.append(e.getServico().getId()).append(","); // Salva o ID do serviço
+                sb.append(e.getServico().getId()).append(",");
                 sb.append(e.getPrecoPraticado()).append("|");
             }
-            sb.deleteCharAt(sb.length() - 1); // Remove último pipe |
+            sb.deleteCharAt(sb.length() - 1);
         } else {
             sb.append("VAZIO");
         }
@@ -75,70 +85,57 @@ public class OrdemServicoDao extends DaoGenerico<OrdemServico> {
 
     @Override
     public OrdemServico fromCSV(String linha) {
-        String[] partes = linha.split(";");
+        String[] p = linha.split(";");
 
-        // RECUPERA DADOS BÁSICOS
-        int numero = Integer.parseInt(partes[0]);
-        LocalDate data = LocalDate.parse(partes[1]);
-        String placa = partes[2];
-        String status = partes[3];
+        int numero = Integer.parseInt(p[0]);
+        LocalDate data = LocalDate.parse(p[1]);
+        String placa = p[2];
+        String matriculaFunc = p[3];
+        String descricao = p[4];
+        String status = p[5];
 
-        Veiculo veiculo = new Veiculo(placa);
-
-        // Cria a OS básica
-        OrdemServico os = new OrdemServico(numero, data, veiculo, status);
-
-        // RECUPERA LISTA DE PEÇAS
-        List<Utiliza> listaPecas = new ArrayList<>();
-        String campoPecas = partes[4];
-
-        if (!campoPecas.equals("VAZIO") && !campoPecas.isEmpty()) {
-            String[] itens = campoPecas.split("\\|");
-            for (String itemStr : itens) {
-                String[] dadosItem = itemStr.split(",");
-
-                int idPeca = Integer.parseInt(dadosItem[0]);
-                int qtd = Integer.parseInt(dadosItem[1]);
-                BigDecimal preco = new BigDecimal(dadosItem[2]);
-
-                // Busca a PEÇA COMPLETA no arquivo de peças usando o ID
-                Peca peca = pecaDao.buscarPorId(String.valueOf(idPeca));
-
-                // Se a peça foi apagada do sistema, cria uma "fake" para não dar erro
-                if (peca == null) {
-                    peca = new Peca(idPeca, "[Peça Excluída]", BigDecimal.ZERO, 0);
-                }
-
-                listaPecas.add(new Utiliza(peca, qtd, preco));
+        // 1. Busca Veículo
+        Veiculo veiculo = null;
+        for(Veiculo v : veiculoDao.listar()){
+            if(v.getPlacaCarro().equalsIgnoreCase(placa)){
+                veiculo = v;
+                break;
             }
         }
-        os.setItensPecas(listaPecas);
+        if (veiculo == null) veiculo = new Veiculo(placa);
 
-        // RECUPERA LISTA DE SERVIÇOS
-        List<Executa> listaServicos = new ArrayList<>();
+        // 2. Busca Funcionário pela MATRÍCULA
+        Funcionario responsavel = funcionarioDao.buscarPorId(matriculaFunc);
 
-        // Verifica se existe a parte de serviços na linha (segurança)
-        if (partes.length > 5) {
-            String campoServicos = partes[5];
+        OrdemServico os = new OrdemServico(
+                numero, data, veiculo, responsavel, descricao, status
+        );
 
-            if (!campoServicos.equals("VAZIO") && !campoServicos.isEmpty()) {
-                String[] itens = campoServicos.split("\\|");
-                for (String itemStr : itens) {
-                    String[] dadosItem = itemStr.split(",");
-
-                    int idServico = Integer.parseInt(dadosItem[0]);
-                    BigDecimal preco = new BigDecimal(dadosItem[1]);
-
-                    // Busca o SERVIÇO COMPLETO no catálogo
-                    CatalogoServico servico = catalogoDao.buscarPorId(String.valueOf(idServico));
-
-                    if (servico != null) {
-                        listaServicos.add(new Executa(servico, preco));
-                    }
+        // 3. Peças
+        if (p.length > 6 && !p[6].equals("VAZIO")) {
+            List<Utiliza> pecas = new ArrayList<>();
+            for (String item : p[6].split("\\|")) {
+                String[] d = item.split(",");
+                Peca peca = pecaDao.buscarPorId(d[0]);
+                if (peca != null) {
+                    pecas.add(new Utiliza(peca, Integer.parseInt(d[1]), new BigDecimal(d[2])));
                 }
             }
+            os.setItensPecas(pecas);
         }
-        os.setItensServicos(listaServicos);
+
+        // 4. Serviços
+        if (p.length > 7 && !p[7].equals("VAZIO")) {
+            List<Executa> servicos = new ArrayList<>();
+            for (String item : p[7].split("\\|")) {
+                String[] d = item.split(",");
+                CatalogoServico serv = catalogoDao.buscarPorId(d[0]);
+                if (serv != null) {
+                    servicos.add(new Executa(serv, new BigDecimal(d[1])));
+                }
+            }
+            os.setItensServicos(servicos);
+        }
 
         return os;
     }

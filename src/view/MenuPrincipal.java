@@ -7,7 +7,7 @@ import java.awt.*;
 public class MenuPrincipal extends JFrame {
 
     public MenuPrincipal() {
-        // Tenta aplicar o visual do Sistema Operacional
+        // Visual do Sistema Operacional
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -15,70 +15,63 @@ public class MenuPrincipal extends JFrame {
         }
 
         // Configurações da Janela
-        setTitle("Sistema de Gestão - Membro 1");
-        setSize(400, 450);
+        setTitle("Sistema de Gestão");
+        setSize(400, 600); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Usa um painel principal com borda para dar margem nas laterais
+        // Painel principal
         JPanel painelPrincipal = new JPanel();
-        painelPrincipal.setLayout(new GridLayout(7, 1, 15, 15)); // Espaço maior entre botões (15px)
-        painelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20)); // Margem de 20px em volta de tudo
-        painelPrincipal.setBackground(new Color(245, 245, 250)); // Fundo levemente cinza/azulado
+        painelPrincipal.setLayout(new GridLayout(8, 1, 15, 15)); 
+        painelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20));
+        painelPrincipal.setBackground(new Color(245, 245, 250));
 
-        setContentPane(painelPrincipal); // Define esse painel como o principal
+        setContentPane(painelPrincipal);
 
-        // Título Estilizado
+        // Título
         JLabel lblTitulo = new JLabel("SISTEMA DE GESTÃO", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 22)); // Fonte moderna
-        lblTitulo.setForeground(new Color(50, 50, 100)); // Cor azul escuro
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTitulo.setForeground(new Color(50, 50, 100));
 
-        // Criando Botões Estilizados
+        // RESOLUÇÃO
+        JButton btnNovaOS = criarBotao("Nova Ordem de Serviço", new Color(138, 43, 226)); // Roxo (Main)
         JButton btnCliente = criarBotao("Gerenciar Clientes", new Color(70, 130, 180)); // Azul Aço
         JButton btnFuncionario = criarBotao("Gerenciar Funcionários", new Color(60, 179, 113)); // Verde Mar
         JButton btnVeiculo = criarBotao("Gerenciar Veículos", new Color(218, 165, 32)); // Dourado
+        JButton btnPeca = criarBotao("Cadastro de Peças", new Color(138, 43, 226)); // Roxo (Controle-Estoque)
+        JButton btnEstoque = criarBotao("Controle de Estoque", new Color(255, 140, 0)); // Laranja (Controle-Estoque)
         JButton btnSair = criarBotao("Sair do Sistema", new Color(205, 92, 92)); // Vermelho Índio
-        JButton btnPeca = criarBotao("Cadastro de Peças", new Color(138, 43, 226)); // Roxo
-        JButton btnEstoque = criarBotao("Controle de Estoque", new Color(255, 140, 0)); // Laranja
 
-        // Ações
+        // Ações (Listeners)
+        btnNovaOS.addActionListener(e -> new TelaNovaOrdemServico().setVisible(true));
         btnCliente.addActionListener(e -> new TelaCliente().setVisible(true));
         btnFuncionario.addActionListener(e -> new TelaFuncionario().setVisible(true));
         btnVeiculo.addActionListener(e -> new TelaVeiculo().setVisible(true));
-        btnSair.addActionListener(e -> System.exit(0));
         btnPeca.addActionListener(e -> new TelaCadastroPeca().setVisible(true));
         btnEstoque.addActionListener(e -> new TelaControleEstoque().setVisible(true));
+        btnSair.addActionListener(e -> System.exit(0));
 
-        // Adicionando
-        add(lblTitulo);
-        add(btnCliente);
-        add(btnFuncionario);
-        add(btnVeiculo);
-        add(btnPeca);
-        add(btnEstoque);
-        add(btnSair);
+        // Componentes ao painel na ordem lógica
+        painelPrincipal.add(lblTitulo);
+        painelPrincipal.add(btnNovaOS);
+        painelPrincipal.add(btnCliente);
+        painelPrincipal.add(btnFuncionario);
+        painelPrincipal.add(btnVeiculo);
+        painelPrincipal.add(btnPeca);     
+        painelPrincipal.add(btnEstoque);  
+        painelPrincipal.add(btnSair);
     }
 
-    // Método Auxiliar para criar botões
+    // Botões padronizados
     private JButton criarBotao(String texto, Color corTema) {
         JButton btn = new JButton(texto);
 
-        // Fonte
         btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
-
         btn.setBackground(Color.WHITE);
-
-        // cor de TEXTO
         btn.setForeground(corTema);
-
-        // Remove o foco
         btn.setFocusPainted(false);
-
-        // Cursor de mãozinha
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        // Borda grossa com a cor do tema
-        btn.setBorder(BorderFactory.createLineBorder(corTema, 2)); // Borda de 2 pixels
+        btn.setBorder(BorderFactory.createLineBorder(corTema, 2));
 
         return btn;
     }
