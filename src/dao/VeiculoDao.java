@@ -10,7 +10,7 @@ public class VeiculoDao extends DaoGenerico<Veiculo> {
     private ClienteDao clienteDao;
 
     public VeiculoDao() {
-        super("veiculos.txt");
+        super("veiculos.csv");
         this.clienteDao = new ClienteDao(); // Inicializa o DAO de cliente
     }
 

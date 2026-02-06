@@ -7,7 +7,7 @@ import java.util.List;
 public class ClienteDao extends DaoGenerico<Cliente>{
     public ClienteDao() {
         //informa para o pai o nome do arquivo
-        super("clientes.txt");
+        super("clientes.csv");
     }
 
     @Override
