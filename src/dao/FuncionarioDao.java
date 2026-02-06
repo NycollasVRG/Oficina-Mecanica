@@ -13,7 +13,7 @@ public class FuncionarioDao extends DaoGenerico<Funcionario>{
 
     //nome do arquivo que será criado na pasta data/
     public FuncionarioDao() {
-        super("funcionarios.txt");
+        super("funcionarios.csv");
     }
 
     @Override
