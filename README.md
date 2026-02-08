@@ -4,8 +4,8 @@ Projeto desenvolvido para a disciplina de Programação Orientada a Objetos.
 
 ## 👥 Integrantes do Grupo
 * **Nycollas** - Parte responsável: Gestão de Pessoas e Veículos
-* **Khauê** - Parte responsável: Estoque e Compras
-* **Rafael** - Parte responsável: Ordem de Serviço e Financeiro
+* **Rafael** - Parte responsável: Estoque e Compras
+* **Khauê** - Parte responsável: Ordem de Serviço e Financeiro
 
 ## 🛠️ Tecnologias Utilizadas
 * Java (JDK version)
