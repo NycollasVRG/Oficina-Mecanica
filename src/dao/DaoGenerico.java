@@ -15,6 +15,9 @@ public abstract class DaoGenerico <T>{
         // Define o caminho data
         this.caminhoArquivo = "data/" + nomeArquivo;
 
+        // --- ADICIONE ESTA LINHA PARA TESTE ---
+        System.out.println("O arquivo está sendo salvo em: " + new File(this.caminhoArquivo).getAbsolutePath());
+
         // Verifica se a pasta existe antes de tentar salvar
         File arquivo = new File(this.caminhoArquivo);
         File pasta = arquivo.getParentFile(); // Pega a pasta "data"
